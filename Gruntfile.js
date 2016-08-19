@@ -4,17 +4,16 @@ module.exports = function (grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     concat: {
-      boomreang: {
+      boomerang: {
         dest: 'dist/boomerang-debug.js',
         src: [
           'bower_components/boomerang/boomerang.js',
-          'src/boomr-plugins/restiming.js',
+          'src/boomr-plugins/logmatic-restiming.js',
           'bower_components/boomerang/plugins/rt.js',
           'bower_components/boomerang/plugins/zzz_last_plugin.js'
         ]
       }
     },
-
     removelogging: {
       dist: {
         src: "dist/boomerang-debug.js",
@@ -24,8 +23,6 @@ module.exports = function (grunt) {
         }
       }
     },
-
-
     uglify: {
       options: {
         sourceMap: true
@@ -37,10 +34,12 @@ module.exports = function (grunt) {
         }
       }
     }
-  })  ;
+  });
+
   grunt.loadNpmTasks('grunt-contrib-concat');
   grunt.loadNpmTasks("grunt-remove-logging");
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.registerTask('default', ['concat', 'removelogging', 'uglify']);
+  grunt.registerTask('angular', ['concat:angular', 'removelogging', 'uglify']);
 
 };

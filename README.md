@@ -41,7 +41,7 @@ You should be able to see this kind of event directly from the Logmatic.io explo
 ```json
 {
    "severity":"info",
-   "message":"[RUM JS] http://localhost:8000/#!/phones/motorola-xoom took 398 ms to load (response: 11 ms, loading: 387 ms)",
+   "message":"[RUM JS] Page '/#!/phones/motorola-xoom' took 398 ms to load (response: 11 ms, loading: 387 ms)",
    "rum":{
       "t_domloaded":374,
       "t_done":398,
@@ -75,13 +75,47 @@ You should be able to see this kind of event directly from the Logmatic.io explo
       "t_resp":11,
       "t_page":387
    },
-   "url":"http://localhost:8000/#!/phones/motorola-xoom"
+   "url":"http://localhost:8000/#!/phones/motorola-xoom",
+   "domain":"localhost"
 }
 ```
 
-### Fire your own timers
+### Customize the reporting
+Right now, you can define how many entries the lib reports by setting the option `worst_entries_number`.
+By default, logmaticRUM reports the worst-10 entries. If you want to change it, **remove** the `logmatic-rum.min.js` and
+add this code.
+```html
+  <head>
+    <title>Example to report User Monitoring performance to Logmatic.io</title>
+   
+    <script type="text/javascript" src="path/to/boomerang.min.js"></script>
+    <script type="text/javascript" src="path/to/logmatic.min.js"></script>
 
-TODO
+
+    <script>
+        logmatic.init('<your_api_key>');
+        // see @https://github.com/logmatic/logmatic-js customize the logger as expected
+        
+        // init Boomerang
+        var boomr = BOOMR.init({
+            Logmatic: {
+                "worst_entries_number": 20
+            }
+        });
+        
+        // Do not use the beacon
+        boomr.subscribe('before_beacon', function (beacon) {
+        
+          beacon = boomr.plugins.Logmatic.beaconPrettyfier(beacon);
+          logmatic.log(beacon.message, beacon);
+        });
+	</script>
+    ...
+  </head>
+...
+</html>
+```
+
 
 ## Build and contribute
 ### Hack the code
@@ -99,7 +133,7 @@ npm install
 
 Build the scripts:
 ```
-grunt build
+grunt
 ```
 
 ### Try the `web-test` app
