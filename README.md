@@ -28,6 +28,7 @@ You simply have to include the minified scripts and initialize your logmatic.io 
     <script>
         logmatic.init('<your_api_key>');
         // see @https://github.com/logmatic/logmatic-js customize the logger as expected
+
 	</script>
     ...
   </head>
@@ -103,12 +104,11 @@ add this code.
             }
         });
         
-        // Do not use the beacon
         boomr.subscribe('before_beacon', function (beacon) {
-        
-          beacon = boomr.plugins.Logmatic.beaconPrettyfier(beacon);
+          beacon = BOOMR.plugins.Logmatic.beaconPrettyfier(beacon);
           logmatic.log(beacon.message, beacon);
         });
+        
 	</script>
     ...
   </head>
@@ -135,6 +135,11 @@ Build the scripts:
 ```
 grunt
 ```
+Scripts are generated into the `dist/` directory:
+* `boomerang-debug.js`: all boomerang files with logging enabled
+* `boomerang.js`: all boomerang files. Logging directives have been removed.
+* `boomerang.min.js` and `boomerang.min.js.map`: the minified version of boomerang. Logging directives have been removed.
+* `logmatic-rum.min.js` and `logmatic-rum.min.js.map` the minified version of logmatic-rum.
 
 ### Try the `web-test` app
 In `test/`, you'll find e a test web app (based on angular-1.x) in order to make some experiments. 
