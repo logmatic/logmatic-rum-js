@@ -6,9 +6,9 @@ Collects End User Web performance and stream it to Logmatic.io
 ## Features 
 - Easy to setup, compatible with modern browsers
 - Use the library as a complement of [logmatic-js](https://github.com/logmatic/logmatic-js) and [boomerang](https://github.com/SOASTA/boomerang) libs
-- All-in-one minified script
-- Human*-readable RUM event (page and assets report)
+- All-in-one minified scripts
 - No-wrapper, use Boomerang as usual
+- *\[ Coming soon \] Single Page Application User Monitoring* 
 
 ## Quick Start
 
@@ -89,9 +89,12 @@ So, you should be able to see this kind of event directly from the Logmatic.io e
 
 ## Boomerang features
 
-Logmatic-rum-js is a kind of an initializator. If you want to use features provide by Boomerang, 
-you have to not include the `logmatic-rum.min.js` script and init Boomerang as usual.
-So, you need to add logmatic-rum-js as follow:
+Logmatic-rum-js is just an initializer for Boomerang. 
+
+So, if you want to use features provide by Boomerang, without limits,
+* **remove** the provided script: `logmatic-rum.min.js`, 
+* init Boomerang as usual and add the following code, 
+* add the following handler to the `before_beacon` event to send to keep Logmatic event format.
 
 ```html
   <head>
@@ -164,7 +167,7 @@ For instance, you can track some async loadings like that:
           
           
           // stop the timer and add labelize it
-          BOOMR.plugins.RT.endTimer("angular-phone-detai");
+          BOOMR.plugins.RT.endTimer("angular-phone-detail");
           
           
         });
@@ -194,6 +197,35 @@ add this code.
         });
 ```
 
+
+### How to add another Boomerang plugins
+The default minified script provided by Logmatic contains these plugins:
+* `boomerang.js`: the library
+* `/plugins/rt.js`: the RT plugin
+* `/plugins/zzz_last_plugin.js`: required for the build
+
+The last plugin is for Logmatic.io `src/boomr-plugins/logmatic-restiminig.js`. It has been forked from the legacy restiming.
+For now, it's the only way to provide another JSon format for ResponseTiming API. 
+
+You can build your own boomerang minified script and adding the DNS and BW plugins for instance with `grunt`
+Edit the `Gruntfile.js` and follow steps describes below.
+
+```json
+
+  ...
+  concat: {
+      boomerang: {
+        dest: 'dist/boomerang-debug.js',
+        src: [
+          'bower_components/boomerang/boomerang.js',
+          'src/boomr-plugins/logmatic-restiming.js',
+          'bower_components/boomerang/plugins/rt.js',
+          'bower_components/boomerang/plugins/zzz_last_plugin.js'
+        ]
+      }
+    },
+  ...
+```
 
 ## Build and contribute
 ### Hack the code
@@ -232,4 +264,3 @@ cd demo
 and open [http://localhost:8000/](http://localhost:8000/) on your browser.
 
 Just don't forget to set your own API key.
-To serve it, just copy/past this command.
