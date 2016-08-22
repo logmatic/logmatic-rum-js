@@ -164,7 +164,7 @@ For instance, you can track some async loadings like that:
           
           
           // stop the timer and add labelize it
-          BOOMR.plugins.RT.endTimer("angular-phone-detai"");
+          BOOMR.plugins.RT.endTimer("angular-phone-detai");
           
           
         });
