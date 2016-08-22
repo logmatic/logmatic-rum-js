@@ -12,8 +12,7 @@ Collects End User Web performance and stream it to Logmatic.io
 
 ## Quick Start
 
-### Load and initialize library
-
+### Load and initialize library (synchronous way)
 You simply have to include the minified scripts and initialize your logmatic.io logger with your key.
 
 ```html
@@ -37,7 +36,14 @@ You simply have to include the minified scripts and initialize your logmatic.io 
 ```
 
 And that's all. 
-You should be able to see this kind of event directly from the Logmatic.io explore view.
+
+By default, Boomerang provides these timers:
+* `t_done`: Time duration between the first page request (i.e. the navigationStart) and the time where the `done()` is fired.
+* `t_resp`: Network duration loading part
+* `t_page`: Renderer page duration
+* `t_domloaded`: Time duration between the first page request and the W3C `DOMContentLoaded` event
+
+So, you should be able to see this kind of event directly from the Logmatic.io explore view.
 
 ```json
 {
@@ -81,10 +87,12 @@ You should be able to see this kind of event directly from the Logmatic.io explo
 }
 ```
 
-### Customize the reporting
-Right now, you can define how many entries the lib reports by setting the option `worst_entries_number`.
-By default, logmaticRUM reports the worst-10 entries. If you want to change it, **remove** the `logmatic-rum.min.js` and
-add this code.
+## Boomerang features
+
+Logmatic-rum-js is a kind of an initializator. If you want to use features provide by Boomerang, 
+you have to not include the `logmatic-rum.min.js` script and init Boomerang as usual.
+So, you need to add logmatic-rum-js as follow:
+
 ```html
   <head>
     <title>Example to report User Monitoring performance to Logmatic.io</title>
@@ -96,14 +104,16 @@ add this code.
     <script>
         logmatic.init('<your_api_key>');
         // see @https://github.com/logmatic/logmatic-js customize the logger as expected
+                
         
         // init Boomerang
         var boomr = BOOMR.init({
-            Logmatic: {
-                "worst_entries_number": 20
-            }
+            // init plugins that you want to use
+            // check below some advanced examples
+        
         });
         
+        // Use the Logmatic default renderer for the restiming plugin
         boomr.subscribe('before_beacon', function (beacon) {
           beacon = BOOMR.plugins.Logmatic.beaconPrettyfier(beacon);
           logmatic.log(beacon.message, beacon);
@@ -114,6 +124,71 @@ add this code.
   </head>
 ...
 </html>
+```
+
+
+### Add your own timers
+Boomerang allows to define custom timers for tracking things that you need. Boomerang use the `RT` plugin to achieve it.
+*Logmatic-rum-js* brings Boomerang as a native lib,so you are able to use that plugin.
+
+In order to fine-control when the beacon is fired, you need to disable the autorun mode.
+Don't forget to **remove** the `logmatic-rum.min.js`
+```html
+        // init Boomerang
+        var boomr = BOOMR.init({
+            autorun: false
+        });
+```
+
+You are responsible to fire the beacon somewhere in your code, when your page/app is ready. You have just to call the 
+`BOOMR.page_ready();` method.
+
+To add another timer to the default ones (`t_done`, `t_resp`, `t_resp` and `t_domloaded`), you have to use `BOOMR.plugins.RT.startTimer("a_timer")` and 
+`BOOMR.plugins.RT.endTimer("a_timer")` API methods.
+ 
+For instance, you can track some async loadings like that:
+```js
+   
+    // Somewhere in a controler
+    function PhoneDetailController($routeParams, Phone) {
+    
+        var self = this;
+        
+        // start the timer and add labelize it
+        BOOMR.plugins.RT.startTimer("angular-phone-detail");
+
+        self.phone = Phone.get({phoneId: $routeParams.phoneId}, function(phone) {
+
+          self.setImage(phone.images[0]);
+          
+          
+          // stop the timer and add labelize it
+          BOOMR.plugins.RT.endTimer("angular-phone-detail"");
+          
+          
+        });
+
+```
+Don't forget to fire the beacon some where after the timer.
+```js
+
+    // At the end of your main controller, when your page is loaded
+    BOOMR.page_ready();
+
+```
+
+
+### Customize the reporting
+Right now, you can define how many entries the lib reports by setting the option `worst_entries_number`.
+By default, logmaticRUM reports the worst-10 entries. If you want to change it, **remove** the `logmatic-rum.min.js` and
+add this code.
+```html
+        // init Boomerang
+        var boomr = BOOMR.init({
+            Logmatic: {
+                "worst_entries_number": 20
+            }
+        });
 ```
 
 
@@ -151,7 +226,7 @@ cd demo
 ./logmatic-rum-demo.sh "<your-api-key>"
 ```
 
-and open http://localhost:8000/ on your browser.
+and open [http://localhost:8000/](http://localhost:8000/) on your browser.
 
 Just don't forget to set your own API key.
 To serve it, just copy/past this command.
