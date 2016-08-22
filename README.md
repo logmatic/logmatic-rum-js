@@ -149,12 +149,13 @@ To add another timer to the default ones (`t_done`, `t_resp`, `t_resp` and `t_do
 For instance, you can track some async loadings like that:
 ```js
    
+    ...
     // Somewhere in a controler
     function PhoneDetailController($routeParams, Phone) {
     
         var self = this;
         
-        // start the timer and add labelize it
+        // start the timer and labelize it
         BOOMR.plugins.RT.startTimer("angular-phone-detail");
 
         self.phone = Phone.get({phoneId: $routeParams.phoneId}, function(phone) {
@@ -163,16 +164,18 @@ For instance, you can track some async loadings like that:
           
           
           // stop the timer and add labelize it
-          BOOMR.plugins.RT.endTimer("angular-phone-detail"");
+          BOOMR.plugins.RT.endTimer("angular-phone-detai"");
           
           
         });
+    })
+    ...
 
 ```
 Don't forget to fire the beacon some where after the timer.
 ```js
 
-    // At the end of your main controller, when your page is loaded
+    // At the end of your main controler, when your page is loaded
     BOOMR.page_ready();
 
 ```
