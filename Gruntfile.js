@@ -8,7 +8,7 @@ module.exports = function (grunt) {
         dest: 'dist/boomerang-debug.js',
         src: [
           'bower_components/boomerang/boomerang.js',
-          'src/boomr-plugins/logmatic-restiming.js',
+          'bower_components/boomerang/plugins/restiming.js',
           'bower_components/boomerang/plugins/rt.js',
           'bower_components/boomerang/plugins/zzz_last_plugin.js'
         ]
