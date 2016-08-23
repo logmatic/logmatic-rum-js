@@ -98,7 +98,7 @@ So, you are able to use all features provide by Boomerang as usual.
 Here are quick tutorial to go deeper:
 * [Add your own timers](#add-your-own-timers)
 * [Customize the beacon reporting](#customize-the-beacon-reporting)
-* [How to add another Boomerang plugins to your build](how-to-add-another-boomerang-plugins-to-your-build)
+* [How to add another Boomerang plugins to your build](#how-to-add-another-boomerang-plugins-to-your-build)
 
 
 ### Add your own timers
@@ -190,7 +190,7 @@ The default minified script provided by Logmatic contains these plugins:
 You can build your own boomerang minified script and adding the DNS and BW plugins for instance with `grunt`
 Edit the `Gruntfile.js` and follow steps describes below.
 
-```json
+```
 
   ...
   concat: {
