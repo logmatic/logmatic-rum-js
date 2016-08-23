@@ -8,6 +8,7 @@ sed "s/API_KEY/$1/" ../index-demo.html > app/index.html
 
 ln -sf ../../../dist/boomerang.min.js app/boomerang.min.js
 ln -sf ../../../dist/logmatic-rum.min.js app/logmatic-rum.min.js
+ln -sf ../../../src/logmatic-rum.js app/logmatic-rum.js
 
 bower install logmatic-js
 npm start
