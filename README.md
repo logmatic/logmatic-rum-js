@@ -25,9 +25,12 @@ You simply have to include the minified scripts and initialize your logmatic.io 
     <script type="text/javascript" src="path/to/logmatic-rum.min.js"></script>
 
     <script>
+        // set up your Logmatic account
         logmatic.init('<your_api_key>');
         // see @https://github.com/logmatic/logmatic-js customize the logger as expected
-
+        
+        // set up boomerang
+        BOOMR.init({});
 	</script>
     ...
   </head>
@@ -41,7 +44,6 @@ By default, Boomerang provides these timers:
 * `t_done`: Time duration between the first page request (i.e. the navigationStart) and the time where the `done()` is fired.
 * `t_resp`: Network duration loading part
 * `t_page`: Renderer page duration
-* `t_domloaded`: Time duration between the first page request and the W3C `DOMContentLoaded` event
 
 So, you should be able to see this kind of event directly from the Logmatic.io explore view.
 
@@ -50,9 +52,22 @@ So, you should be able to see this kind of event directly from the Logmatic.io e
    "severity":"info",
    "message":"[RUM JS] Page '/#!/phones/motorola-xoom' took 398 ms to load (response: 11 ms, loading: 387 ms)",
    "rum":{
-      "t_domloaded":374,
       "t_done":398,
+      "t_resp":11,
+      "t_page":387,
+      "t_other":{
+          "t_domloaded": 230
+           },
       "assets":{
+         "nb":24,
+         "t_max":135,
+         "worst_entries":[
+            "http://localhost:8000/phone-detail/phone-detail.module.js took 135 ms",
+            "http://localhost:8000/phone-detail/phone-detail.component.js took 135 ms",
+            "http://localhost:8000/phone-list/phone-list.component.js took 132 ms",
+            "http://localhost:8000/core/phone/phone.service.js took 98 ms",
+            "http://localhost:8000/core/core.module.js took 95 ms"
+         ],
          "other":{
             "nb":1,
             "t_max":13
@@ -61,15 +76,6 @@ So, you should be able to see this kind of event directly from the Logmatic.io e
             "nb":1,
             "t_max":36
          },
-         "nb":24,
-         "worst_entries":[
-            "http://localhost:8000/phone-detail/phone-detail.module.js took 135 ms",
-            "http://localhost:8000/phone-detail/phone-detail.component.js took 135 ms",
-            "http://localhost:8000/phone-list/phone-list.component.js took 132 ms",
-            "http://localhost:8000/core/phone/phone.service.js took 98 ms",
-            "http://localhost:8000/core/core.module.js took 95 ms"
-         ],
-         "t_max":135,
          "link":{
             "nb":3,
             "t_max":13
@@ -78,9 +84,7 @@ So, you should be able to see this kind of event directly from the Logmatic.io e
             "nb":19,
             "t_max":135
          }
-      },
-      "t_resp":11,
-      "t_page":387
+      }
    },
    "url":"http://localhost:8000/#!/phones/motorola-xoom",
    "domain":"localhost"
@@ -91,10 +95,7 @@ So, you should be able to see this kind of event directly from the Logmatic.io e
 
 Logmatic-rum-js is just an initializer for Boomerang. 
 
-So, if you want to use features provide by Boomerang, without limits,
-* **remove** the provided script: `logmatic-rum.min.js`, 
-* init Boomerang as usual and add the following code, 
-* add the following handler to the `before_beacon` event to send to keep Logmatic event format.
+So, you are able to use all features provide by Boomerang as usual
 
 ```html
   <head>
@@ -102,6 +103,7 @@ So, if you want to use features provide by Boomerang, without limits,
    
     <script type="text/javascript" src="path/to/boomerang.min.js"></script>
     <script type="text/javascript" src="path/to/logmatic.min.js"></script>
+    <script type="text/javascript" src="path/to/logmatic-rum.min.js"></script>
 
 
     <script>
@@ -109,17 +111,11 @@ So, if you want to use features provide by Boomerang, without limits,
         // see @https://github.com/logmatic/logmatic-js customize the logger as expected
                 
         
-        // init Boomerang
-        var boomr = BOOMR.init({
+        // init Boomerang as usual
+        BOOMR.init({
             // init plugins that you want to use
             // check below some advanced examples
         
-        });
-        
-        // Use the Logmatic default renderer for the restiming plugin
-        boomr.subscribe('before_beacon', function (beacon) {
-          beacon = BOOMR.plugins.Logmatic.beaconPrettyfier(beacon);
-          logmatic.log(beacon.message, beacon);
         });
         
 	</script>
@@ -135,10 +131,9 @@ Boomerang allows to define custom timers for tracking things that you need. Boom
 *Logmatic-rum-js* brings Boomerang as a native lib,so you are able to use that plugin.
 
 In order to fine-control when the beacon is fired, you need to disable the autorun mode.
-Don't forget to **remove** the `logmatic-rum.min.js`
 ```html
         // init Boomerang
-        var boomr = BOOMR.init({
+        BOOMR.init({
             autorun: false
         });
 ```
@@ -146,7 +141,7 @@ Don't forget to **remove** the `logmatic-rum.min.js`
 You are responsible to fire the beacon somewhere in your code, when your page/app is ready. You have just to call the 
 `BOOMR.page_ready();` method.
 
-To add another timer to the default ones (`t_done`, `t_resp`, `t_resp` and `t_domloaded`), you have to use `BOOMR.plugins.RT.startTimer("a_timer")` and 
+To add another timer to the default ones (`t_done`, `t_resp`, `t_resp`), you have to use `BOOMR.plugins.RT.startTimer("a_timer")` and 
 `BOOMR.plugins.RT.endTimer("a_timer")` API methods.
  
 For instance, you can track some async loadings like that:
@@ -159,7 +154,7 @@ For instance, you can track some async loadings like that:
         var self = this;
         
         // start the timer and labelize it
-        BOOMR.plugins.RT.startTimer("angular-phone-detail");
+        BOOMR.plugins.RT.startTimer("t_angular");
 
         self.phone = Phone.get({phoneId: $routeParams.phoneId}, function(phone) {
 
@@ -167,7 +162,7 @@ For instance, you can track some async loadings like that:
           
           
           // stop the timer and add labelize it
-          BOOMR.plugins.RT.endTimer("angular-phone-detail");
+          BOOMR.plugins.RT.endTimer("t_angular");
           
           
         });
@@ -183,14 +178,25 @@ Don't forget to fire the beacon some where after the timer.
 
 ```
 
+Events fired look like as following 
+```json
+
+    ...
+    "t_page":387,
+    "t_other":{
+        "t_domloaded": 230,
+        "t_angular": 23
+    },
+    ...
+
+```
 
 ### Customize the reporting
 Right now, you can define how many entries the lib reports by setting the option `worst_entries_number`.
-By default, logmaticRUM reports the worst-10 entries. If you want to change it, **remove** the `logmatic-rum.min.js` and
-add this code.
+By default, logmaticRUM reports the worst-10 entries. If you want to change it, set the right property in your code.
 ```html
         // init Boomerang
-        var boomr = BOOMR.init({
+        BOOMR.init({
             Logmatic: {
                 "worst_entries_number": 20
             }
@@ -198,14 +204,13 @@ add this code.
 ```
 
 
-### How to add another Boomerang plugins
+### How to add another Boomerang plugins to your build
 The default minified script provided by Logmatic contains these plugins:
 * `boomerang.js`: the library
+* `/plugins/restiming.js`: the restiming plugin
 * `/plugins/rt.js`: the RT plugin
 * `/plugins/zzz_last_plugin.js`: required for the build
 
-The last plugin is for Logmatic.io `src/boomr-plugins/logmatic-restiminig.js`. It has been forked from the legacy restiming.
-For now, it's the only way to provide another JSon format for ResponseTiming API. 
 
 You can build your own boomerang minified script and adding the DNS and BW plugins for instance with `grunt`
 Edit the `Gruntfile.js` and follow steps describes below.
@@ -218,7 +223,7 @@ Edit the `Gruntfile.js` and follow steps describes below.
         dest: 'dist/boomerang-debug.js',
         src: [
           'bower_components/boomerang/boomerang.js',
-          'src/boomr-plugins/logmatic-restiming.js',
+          'bower_components/boomerang/plugins/restiming.js',
           'bower_components/boomerang/plugins/rt.js',
           'bower_components/boomerang/plugins/zzz_last_plugin.js'
         ]
