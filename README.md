@@ -12,7 +12,7 @@ Collects End User Web performance and stream it to Logmatic.io
 
 ## Quick Start
 
-### Load and initialize library (synchronous way)
+### Load and initialize the library (synchronous way)
 You simply have to include the minified scripts and initialize your logmatic.io logger with your key.
 
 ```html
@@ -42,10 +42,10 @@ And that's all.
 
 By default, Boomerang provides these timers:
 * `t_done`: Time duration between the first page request (i.e. the navigationStart) and the time where the `done()` is fired.
-* `t_resp`: Network duration loading part
-* `t_page`: Renderer page duration
+* `t_resp`: Network time duration
+* `t_page`: Renderer time duration
 
-So, you should be able to see this kind of event directly from the Logmatic.io explore view.
+So, you should be able to see this kind of event directly from the [Logmatic.io](https://app.logmatic.io) explore view.
 
 ```json
 {
@@ -91,39 +91,14 @@ So, you should be able to see this kind of event directly from the Logmatic.io e
 }
 ```
 
-## Boomerang features
+## Using Boomerang features
 
-Logmatic-rum-js is just an initializer for Boomerang. 
-
-So, you are able to use all features provide by Boomerang as usual
-
-```html
-  <head>
-    <title>Example to report User Monitoring performance to Logmatic.io</title>
-   
-    <script type="text/javascript" src="path/to/boomerang.min.js"></script>
-    <script type="text/javascript" src="path/to/logmatic.min.js"></script>
-    <script type="text/javascript" src="path/to/logmatic-rum.min.js"></script>
-
-
-    <script>
-        logmatic.init('<your_api_key>');
-        // see @https://github.com/logmatic/logmatic-js customize the logger as expected
-                
-        
-        // init Boomerang as usual
-        BOOMR.init({
-            // init plugins that you want to use
-            // check below some advanced examples
-        
-        });
-        
-	</script>
-    ...
-  </head>
-...
-</html>
-```
+`logmatic-rum-js` is just a plugin for Boomerang. 
+So, you are able to use all features provide by Boomerang as usual.
+Here are quick tutorial to go deeper:
+* [Add your own timers](#add-your-own-timers)
+* [Customize the beacon reporting](#customize-the-beacon-reporting)
+* [How to add another Boomerang plugins to your build](how-to-add-another-boomerang-plugins-to-your-build)
 
 
 ### Add your own timers
@@ -191,7 +166,7 @@ Events fired look like as following
 
 ```
 
-### Customize the reporting
+### Customize the beacon reporting
 Right now, you can define how many entries the lib reports by setting the option `worst_entries_number`.
 By default, logmaticRUM reports the worst-10 entries. If you want to change it, set the right property in your code.
 ```html
