@@ -1,0 +1,33 @@
+{
+  "name": "logmatic-rum-js",
+  "version": "0.1.0",
+  "description": "Client-side JavaScript RUM library for Logmatic.io",
+  "main": "dist/logmatic-rum.min.js",
+  "authors": [
+    "Logmatic.io"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "logmatic-js",
+    "rum",
+    "logmatic"
+  ],
+  "homepage": "https://github.com/logmatic/logmatic-rum-js",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "src",
+    "demo",
+    "bower.json",
+    "Gruntfile.js",
+    "package.json",
+    "README.md"
+  ],
+  "dependencies": {
+    "logmatic-js": "*"
+  },
+  "devDependencies": {
+    "boomerang": "*"
+  }
+}
