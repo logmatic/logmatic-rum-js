@@ -2,8 +2,11 @@
 
   // Number of entries displayed in the worst-xx
   var _config = {
-    worst_entries_number: 10
+    worst_entries_number: 10,
+    handler: undefined
   };
+
+  var _logmatic;
 
   /**
    * Decode a trie structure to a flatten object
@@ -125,7 +128,7 @@
 
     // assets
     if (beacon.restiming) {
-      logmaticBeacon.rum.assets = restimingDecoder(JSON.parse(beacon.restiming));
+      logmaticBeacon.rum.restiming = restimingDecoder(JSON.parse(beacon.restiming));
     }
 
     // others timers
@@ -135,14 +138,14 @@
       var item = others[i].split("|");
       t_other[item[0]] = parseInt(item[1]);
     }
-    logmaticBeacon.rum.t_other = t_other;
+    logmaticBeacon.rum.RT = t_other;
 
 
-    var message = "[RUM JS] Page '" + location.href.replace(location.origin, "");
+    var message = "'" + location.href.replace(location.origin, "");
     message += "' loaded in " + logmaticBeacon.rum.t_done + " ms (response: ";
     message += logmaticBeacon.rum.t_resp + " ms, loading: " + logmaticBeacon.rum.t_page + " ms)";
 
-    window.logmatic.log(message, logmaticBeacon);
+    _logmatic.log(message, logmaticBeacon);
 
 
   };
@@ -154,10 +157,15 @@
     init: function (config) {
 
       // This block is only needed if you actually have user configurable properties
-      BOOMR.utils.pluginConfig(_config, config, "Logmatic", ["worst_entries_number"]);
+      BOOMR.utils.pluginConfig(_config, config, "Logmatic", ["worst_entries_number", "handler"]);
 
-      if (window.logmatic === undefined) {
-        return; // don nothing if Logmatic libs are not loaded
+      if (_config.handler === undefined) {
+        if (logmatic === undefined) {
+          return; // do nothing if Logmatic libs are not loaded
+        }
+        _logmatic = logmatic;
+      } else {
+        _logmatic = _config.handler;
       }
 
       // bind Logmatic and Boomerang
