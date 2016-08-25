@@ -14,6 +14,8 @@ Collects End User Web performance and stream it to Logmatic.io
 
 ### Load and initialize the library (synchronous way)
 You simply have to include the minified scripts and initialize your logmatic.io logger with your key.
+If you're using bower, install it as usual: `bower install --save logmatic-rum-js`. 
+
 
 ```html
 <html>
@@ -37,8 +39,8 @@ You simply have to include the minified scripts and initialize your logmatic.io 
 ...
 </html>
 ```
-
 And that's all. 
+
 
 By default, Boomerang provides these timers:
 * `t_done`: Time duration between the first page request (i.e. the navigationStart) and the time where the `done()` is fired.
