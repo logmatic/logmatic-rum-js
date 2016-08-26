@@ -92,6 +92,20 @@ So, once loaded in a page you should see this kind of events in the [Logmatic.io
 }
 ```
 
+## Provided demo
+In `demo/`, you'll find a script that download and launch a simple demo app (based on angular-1.x) in order to make some experiments. 
+We encourage you to have a look at it as you'll be able to shoot a some events in a few seconds.
+To start the demo app, follow these steps:
+
+```bash
+cd demo
+./logmatic-rum-demo.sh "<your-api-key>"
+```
+
+and open [http://localhost:8000/](http://localhost:8000/) on your browser.
+
+Just don't forget to set your own API key.
+
 ## Using Boomerang features
 
 `logmatic-rum-js` has been designed as a regular Boomerang's plugin. Hence, you can leaverage all the features and the use cases provided by Boomerang.
@@ -230,17 +244,3 @@ Scripts are generated into the `dist/` directory:
 * `boomerang.js`: all boomerang files. Logging directives have been removed.
 * `boomerang.min.js` and `boomerang.min.js.map`: the minified version of boomerang. Logging directives have been removed.
 * `logmatic-rum.min.js` and `logmatic-rum.min.js.map` the minified version of logmatic-rum.
-
-### Provided demo
-In `demo/`, you'll find a script that download and launch a simple demo app (based on angular-1.x) in order to make some experiments. 
-We encourage you to have a look at it as you'll be able to shoot a some events in a few seconds.
-To start the demo app, follow these steps:
-
-```bash
-cd demo
-./logmatic-rum-demo.sh "<your-api-key>"
-```
-
-and open [http://localhost:8000/](http://localhost:8000/) on your browser.
-
-Just don't forget to set your own API key.
