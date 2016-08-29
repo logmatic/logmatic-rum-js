@@ -12,6 +12,18 @@ module.exports = function (grunt) {
           'bower_components/boomerang/plugins/rt.js',
           'bower_components/boomerang/plugins/zzz_last_plugin.js'
         ]
+      },
+      angular: {
+        dest: 'dist/boomerang-debug.js',
+        src: [
+          'bower_components/boomerang/boomerang.js',
+          'bower_components/boomerang/plugins/auto_xhr.js',
+          'bower_components/boomerang/plugins/spa.js',
+          'bower_components/boomerang/plugins/angular.js',
+          'bower_components/boomerang/plugins/restiming.js',
+          'bower_components/boomerang/plugins/rt.js',
+          'bower_components/boomerang/plugins/zzz_last_plugin.js'
+        ]
       }
     },
     removelogging: {
