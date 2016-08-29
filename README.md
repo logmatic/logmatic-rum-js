@@ -193,6 +193,7 @@ By default, logmaticRUM reports the worst 10 entries. If you want to change it, 
 ```
 
 
+
 ### How to add another Boomerang plugin to your build
 The default minified script provided by Logmatic contains these plugins:
 * `boomerang.js`: the library
