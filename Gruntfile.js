@@ -51,7 +51,7 @@ module.exports = function (grunt) {
         files: [
           // includes files within path
           {expand: true, src: ['build/boomerang.min.js*'], dest: 'dist/boomerang-' + target, flatten: true, filter: 'isFile'},
-          {expand: true, src: ['build/logmatic-rum*'], dest: 'dist/', filter: 'isFile'}
+          {expand: true, src: ['build/logmatic-rum*'], dest: 'dist/', flatten: true,  filter: 'isFile'}
         ]
       }
     },
