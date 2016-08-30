@@ -51,7 +51,7 @@ So, once loaded in a page you should see this kind of events in the [Logmatic.io
 ```json
 {
    "severity":"info",
-   "message":"[RUM JS] Page '/#!/phones/motorola-xoom' took 398 ms to load (response: 11 ms, loading: 387 ms)",
+   "message":"[RUM JS] Page '/#!/phones/motorola-xoom' took 398 ms to load",
    "rum":{
       "t_done":398,
       "t_resp":11,
@@ -115,9 +115,11 @@ and open [http://localhost:8000/](http://localhost:8000/) on your browser.
 
 Although you can read the [use cases](http://www.lognormal.com/boomerang/doc/use-cases.html) provided in the Boomerang documentation please find below the ones we wanted to highlight here:
 * [Add your own timers](#add-your-own-timers)
+* [Single Page Application Monitoring](#single-page-application-monitoring)
 * [Customize the beacon reporting](#customize-the-beacon-reporting)
-* [How to add another Boomerang plugins to your build](#how-to-add-another-boomerang-plugins-to-your-build)
+* [Customize the logger instance](#customize-the-beacon-reporting)
 
+And for developers: [Build and contribute](#build-and-contribute)
 
 ### Add your own timers
 Boomerang allows you to define custom timers for tracking custom components. This feature is emboddied by the `RT` plugin directly loaded in the boomerang most basic Boomerang library (so no need to rebuild the library here...).
@@ -184,7 +186,7 @@ Events fired look like as the following one:
 ```
 
 ### Single-Page application monitoring
-Actually, we only test this with angular. Please feel free to create an issue if you face any troubles.
+Actually, we only test this with angular. Please feel free to create an issue if you're facing any troubles.
 
 To use Boomerang and Logmatic with Angular, you need set both Boomerang and Angular.
 Get sources from the `dist/boomerang-angular` directory, or build your own.
@@ -247,6 +249,14 @@ Then, in your angular bootstrap script add the following code
 ```
 
 Depending of the framework uses, check the corresponding [documenation API](https://soasta.github.io/boomerang/doc/api/SPA.html).
+We also provides a demo app, just look below.
+
+```bash
+cd demo
+
+./logmatic-rum-demo.sh "<your-api-key>" angular
+```
+
 
 ### Customize the beacon reporting
 Right now, you can define how many worst assets the lib reports by setting the option `number_of_worst_entries` through the `restiming` plugin.
