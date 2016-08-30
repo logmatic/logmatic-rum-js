@@ -8,7 +8,7 @@ This library aims at collecting End User Web performance and streaming it to Log
 - Use the library as a complement of [logmatic-js](https://github.com/logmatic/logmatic-js) and [boomerang](https://github.com/SOASTA/boomerang) libs
 - All-in-one minified scripts
 - No-wrapper, use Boomerang as usual
-- *\[ Coming soon \] Single Page Application User Monitoring* 
+- Single Page Application User Monitoring
 
 ## Quick Start
 
@@ -92,19 +92,25 @@ So, once loaded in a page you should see this kind of events in the [Logmatic.io
 }
 ```
 
+
 ## Provided demo
-In `demo/`, you'll find a script that download and launch a simple demo app (based on angular-1.x) in order to make some experiments. 
+In `demo/`, you'll find a script that download and launch a simple demo app in order to make some experiments. 
 We encourage you to have a look at it as you'll be able to shoot a some events in a few seconds.
-To start the demo app, follow these steps:
+You can choose to launch a simple page or a full angular app. To start the demo app, follow these steps:
 
 ```bash
 cd demo
-./logmatic-rum-demo.sh "<your-api-key>"
+
+# launch an angular demo app
+./logmatic-rum-demo.sh "<your-api-key>" angular
+
+# launch a simple and static page
+./logmatic-rum-demo.sh "<your-api-key>" minimalist
 ```
 
 and open [http://localhost:8000/](http://localhost:8000/) on your browser.
 
-Just don't forget to set your own API key.
+**Just don't forget to set your own API key.**
 
 ## Using Boomerang features
 
@@ -172,7 +178,7 @@ Events fired look like as the following one:
 
     ...
     "t_page":387,
-    "t_other":{
+    "RT":{
         "t_domloaded": 230,
         "t_angular": 23
     },
@@ -192,6 +198,17 @@ By default, logmaticRUM reports the worst 10 entries. If you want to change it, 
         });
 ```
 
+### Customize the logger instance 
+`logmatic-rum-js` uses as default the logmatic instance. But if you have multiple logger, and you want to choose the default one,
+you can provides to the library which logger to use as follow.
+```html
+        // init Boomerang
+        BOOMR.init({
+            Logmatic: {
+                logger: my_other_logmatic_handler
+            }
+        });
+```
 
 
 ### How to add another Boomerang plugin to your build
