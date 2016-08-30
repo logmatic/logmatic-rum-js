@@ -8,7 +8,7 @@ This library aims at collecting End User Web performance and streaming it to Log
 - Use the library as a complement of [logmatic-js](https://github.com/logmatic/logmatic-js) and [boomerang](https://github.com/SOASTA/boomerang) libs
 - All-in-one minified scripts
 - No-wrapper, use Boomerang as usual
-- Single Page Application User Monitoring
+- Single Page Application Monitoring (Angular, Backbone, etc.)
 
 ## Quick Start
 
@@ -96,16 +96,13 @@ So, once loaded in a page you should see this kind of events in the [Logmatic.io
 ## Provided demo
 In `demo/`, you'll find a script that download and launch a simple demo app in order to make some experiments. 
 We encourage you to have a look at it as you'll be able to shoot a some events in a few seconds.
-You can choose to launch a simple page or a full angular app. To start the demo app, follow these steps:
+To start the demo app, follow these steps:
 
 ```bash
 cd demo
 
-# launch an angular demo app
-./logmatic-rum-demo.sh "<your-api-key>" angular
-
 # launch a simple and static page
-./logmatic-rum-demo.sh "<your-api-key>" minimalist
+./logmatic-rum-demo.sh "<your-api-key>"
 ```
 
 and open [http://localhost:8000/](http://localhost:8000/) on your browser.
@@ -186,6 +183,71 @@ Events fired look like as the following one:
 
 ```
 
+### Single-Page application monitoring
+Actually, we only test this with angular. Please feel free to create an issue if you face any troubles.
+
+To use Boomerang and Logmatic with Angular, you need set both Boomerang and Angular.
+Get sources from the `dist/boomerang-angular` directory, or build your own.
+Then, declare initialize the plugin right into `init` method:
+
+```html
+        BOOMR.init({
+            // AngularJS
+            Angular: {
+                enabled: true
+            },
+            autorun: false,
+            // Disable XHR instrumentation as this is auto-enabled by the SPA-plugins
+            instrument_xhr: false
+        });
+```
+
+Then, in your angular bootstrap script add the following code 
+
+```javascript
+  // This block enable RUM for angular
+  .run(['$rootScope', function ($rootScope) {
+      // If boomerang is loaded to late to watch the first route change happen
+      // toggle hadRouteChange to true using the routeChangeStart callback.
+      // This will tell the plugin to fire a beacon immediately as it gets
+      // initialized and not wait for a routeChange event.
+      var hadRouteChange = false;
+      $rootScope.$on("$routeChangeStart", function () {
+        hadRouteChange = true;
+      });
+      function hookAngularBoomerang() {
+
+        if (window.BOOMR && BOOMR.version) {
+          if (BOOMR.plugins && BOOMR.plugins.Angular) {
+            // pass your $rootScope object and the aforementioned hadRoueChange variable to
+            // the hook to both make sure we are listening for route changes and check whether
+            // or not we we're on time
+            BOOMR.plugins.Angular.hook($rootScope, hadRouteChange);
+          }
+          return true;
+        }
+      }
+
+      // If we hooked in correctly we would return true if not we wait for the onBoomerangLoaded event
+      // to fire and try again as we can be sure then that Boomerang has arrived in the page
+      if (!hookAngularBoomerang()) {
+        if (document.addEventListener) {
+          document.addEventListener("onBoomerangLoaded", hookAngularBoomerang);
+        } else if (document.attachEvent) {
+          document.attachEvent("onpropertychange", function (e) {
+            e = e || window.event;
+            if (e && e.propertyName === "onBoomerangLoaded") {
+              hookAngularBoomerang();
+            }
+          });
+        }
+      }
+    }]
+  )
+```
+
+Depending of the framework uses, check the corresponding [documenation API](https://soasta.github.io/boomerang/doc/api/SPA.html).
+
 ### Customize the beacon reporting
 Right now, you can define how many worst assets the lib reports by setting the option `number_of_worst_entries` through the `restiming` plugin.
 By default, logmaticRUM reports the worst 10 entries. If you want to change it, set the right property in your code.
@@ -210,35 +272,6 @@ you can provides to the library which logger to use as follow.
         });
 ```
 
-
-### How to add another Boomerang plugin to your build
-The default minified script provided by Logmatic contains these plugins:
-* `boomerang.js`: the library
-* `/plugins/restiming.js`: the restiming plugin
-* `/plugins/rt.js`: the RT plugin
-* `/plugins/zzz_last_plugin.js`: required for the build
-
-
-You can build your own boomerang minified script and adding the DNS and BW plugins with `grunt`
-Edit the `Gruntfile.js` and follow the steps below.
-
-```
-
-  ...
-  concat: {
-      boomerang: {
-        dest: 'dist/boomerang-debug.js',
-        src: [
-          'bower_components/boomerang/boomerang.js',
-          'bower_components/boomerang/plugins/restiming.js',
-          'bower_components/boomerang/plugins/rt.js',
-          'bower_components/boomerang/plugins/zzz_last_plugin.js'
-        ]
-      }
-    },
-  ...
-```
-
 ## Build and contribute
 ### Hack the code
 If you want to contribute or customize the Boomerang lib with another plugins, we provide some grunt tasks.
@@ -253,12 +286,40 @@ cd logmatic-rum-js
 npm install 
 ```
 
-Build the scripts:
+### Customize, add plugins and build the your version
+
+The default minified script provided by Logmatic contains these plugins:
+* `boomerang.js`: the library
+* `/plugins/restiming.js`: the restiming plugin
+* `/plugins/rt.js`: the RT plugin
+* `/plugins/zzz_last_plugin.js`: required for the build
+
+You can build your own boomerang minified script and adding the DNS and BW plugins with `grunt`. 
+To personalize the build, edit the `package.json` file and add your target. Look at the `angular` declaration for instance:
+
+```json
+{
+  "minimal": [
+    "plugins/rt.js",
+    "plugins/restiming.js"
+  ],
+  "angular": [
+    "plugins/auto_xhr.js",
+    "plugins/spa.js",
+    "plugins/angular.js",
+    "plugins/rt.js",
+    "plugins/restiming.js"
+  ],
+  "...
+}
 ```
-grunt
+
+Then, run the `grunt` command with the target expected.
+
 ```
-Scripts are generated into the `dist/` directory:
-* `boomerang-debug.js`: all boomerang files with logging enabled
-* `boomerang.js`: all boomerang files. Logging directives have been removed.
-* `boomerang.min.js` and `boomerang.min.js.map`: the minified version of boomerang. Logging directives have been removed.
+grunt --target=angular
+```
+
+The build is generated into the `dist/` directory:
+* `<target>/boomerang.min.js` and `<target>/boomerang.min.js.map`: the minified version of boomerang. Logging directives have been removed.
 * `logmatic-rum.min.js` and `logmatic-rum.min.js.map` the minified version of logmatic-rum.
