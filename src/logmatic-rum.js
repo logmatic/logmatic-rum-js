@@ -1,9 +1,9 @@
 (function () {
 
-  // Number of entries displayed in the worst-xx
+  // configuration
   var _config = {
-    worst_entries_number: 10,
-    handler: undefined
+    number_of_worst_entries: 10,
+    logger: undefined
   };
 
   var _logmatic;
@@ -95,7 +95,11 @@
     });
 
     // compute the worst-top restiming
-    assets.worst_entries = assets.entries.slice(0, _config.worst_entries_number);
+    if (_config.number_of_worst_entries === -1) {
+      assets.worst_entries = assets.entries.slice();
+    } else {
+      assets.worst_entries = assets.entries.slice(0, _config.number_of_worst_entries);
+    }
     assets.entries = undefined;
 
     // display it as human-readable
@@ -112,16 +116,15 @@
    *
    * @param beacon
    */
-  var sendBeaconToLogmatic = function (beacon) {
-
+  var sendToLogmatic = function (beacon) {
 
     var logmaticBeacon = {};
 
     // basic info
     logmaticBeacon.rum = {};
     logmaticBeacon.rum.t_done = beacon.t_done;
-    logmaticBeacon.rum.t_resp = beacon.t_resp;
-    logmaticBeacon.rum.t_page = beacon.t_page;
+    logmaticBeacon.rum.t_resp = beacon.t_resp || undefined;
+    logmaticBeacon.rum.t_page = beacon.t_page || undefined;
     logmaticBeacon.url = location.href;
     logmaticBeacon.domain = location.hostname;
 
@@ -132,18 +135,18 @@
     }
 
     // others timers
-    var others = beacon.t_other.split(",");
-    var t_other = {};
-    for (var i = 0; i < others.length; i++) {
-      var item = others[i].split("|");
-      t_other[item[0]] = parseInt(item[1]);
+    if (beacon.t_other !== undefined) {
+      var others = beacon.t_other.split(",");
+      var t_other = {};
+      for (var i = 0; i < others.length; i++) {
+        var item = others[i].split("|");
+        t_other[item[0]] = parseInt(item[1]);
+      }
+      logmaticBeacon.rum.RT = t_other;
     }
-    logmaticBeacon.rum.RT = t_other;
-
 
     var message = "'" + location.href.replace(location.origin, "");
-    message += "' loaded in " + logmaticBeacon.rum.t_done + " ms (response: ";
-    message += logmaticBeacon.rum.t_resp + " ms, loading: " + logmaticBeacon.rum.t_page + " ms)";
+    message += "' loaded in " + logmaticBeacon.rum.t_done + " ms";
 
     _logmatic.log(message, logmaticBeacon);
 
@@ -157,27 +160,27 @@
     init: function (config) {
 
       // This block is only needed if you actually have user configurable properties
-      BOOMR.utils.pluginConfig(_config, config, "Logmatic", ["worst_entries_number", "handler"]);
+      BOOMR.utils.pluginConfig(_config, config, "Logmatic", ["number_of_worst_entries", "logger"]);
 
-      if (_config.handler === undefined) {
+      if (_config.logger === undefined) {
         if (logmatic === undefined) {
           return; // do nothing if Logmatic libs are not loaded
         }
         _logmatic = logmatic;
       } else {
-        _logmatic = _config.handler;
+        _logmatic = _config.logger;
       }
 
       // bind Logmatic and Boomerang
       BOOMR.subscribe('before_beacon', function (beacon) {
-        sendBeaconToLogmatic(beacon);
+        sendToLogmatic(beacon);
       });
 
     },
     is_complete: function () {
       return true;
     },
-    sendBeaconToLogmatic: sendBeaconToLogmatic
+    sendToLogmatic: sendToLogmatic
   }
 
 
